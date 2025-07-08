@@ -50,7 +50,6 @@ actor JobShop
     
     Jobber("John", this)
     Jobber("Mark", this)
-    // TODO jobber looks for job, instead of being given
 
   be get_job(who: Jobber tag) =>
     _env.out.print("Someone is looking for work")
@@ -131,7 +130,7 @@ actor Jobber is TimerNotify
       | Avg => avg_job()
       | Hard => hard_job()
       end
-    end // TODO should have an ack (accept/reject)
+    end
       
   be granted(which: ToolType) =>
     _holding_tool = which
@@ -167,7 +166,7 @@ actor Jobber is TimerNotify
     _working_on = None
     _busy = false
     _shop.out(Object)
-    look_later() // to simulate some working time, goodenough
+    look_later()
 
   fun ref hard_job() =>
     _shop.get_tool(Hammer, this)
