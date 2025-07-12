@@ -2,4 +2,4 @@
 -export([start/0]).
 
 start() ->
-    spawn(jobshop,
+    JobShop = spawn(jobshop, start, [])

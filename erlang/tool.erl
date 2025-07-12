@@ -1,15 +1,15 @@
--module(hammer).
+-module(tool).
 -export([start/0, loop_available/1, loop_taken/1]).
 
 start() ->
-    spawn(hammer, loop_available, [[]]).
+    spawn(tool, loop_available, [[]]).
 
 loop_available([]) ->
     receive
-	{Client, geth} ->
+	{Client, get} ->
 	    Client ! {self(), granted},
 	    loop_taken([]);
-	{_, puth} ->
+	{_, put} ->
 	    loop_available([])
     end;
 loop_available([H|T]) ->
@@ -18,10 +18,10 @@ loop_available([H|T]) ->
 
 loop_taken(Q) ->
     receive
-	{Client, puth} ->
+	{Client, put} ->
 	    Client ! {self(), thanks},
 	    loop_available(Q);
-	{Client, geth} ->
+	{Client, get} ->
 	    loop_taken(Q ++ [Client])
     end.
 
