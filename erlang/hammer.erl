@@ -1,27 +1,28 @@
 -module(hammer).
--export([start/0, loop_available/0, loop_taken/0]).
+-export([start/0, loop_available/1, loop_taken/1]).
 
 start() ->
-    spawn(hammer, loop_available, []).
+    spawn(hammer, loop_available, [[]]).
 
-loop_available() ->
+loop_available([]) ->
     receive
 	{Client, geth} ->
 	    Client ! {self(), granted},
-	    loop_taken();
-	{Client, puth} ->
-	    Client ! {self(), whut},
-	    loop_available()
-    end.
+	    loop_taken([]);
+	{_, puth} ->
+	    loop_available([])
+    end;
+loop_available([H|T]) ->
+    H ! {self(), granted},
+    loop_taken(T).
 
-loop_taken() ->
+loop_taken(Q) ->
     receive
 	{Client, puth} ->
 	    Client ! {self(), thanks},
-	    loop_available();
+	    loop_available(Q);
 	{Client, geth} ->
-	    Client ! {self(), busy}, % should actually wait till puth and send granted
-	    loop_taken()
+	    loop_taken(Q ++ [Client])
     end.
 
 
