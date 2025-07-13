@@ -2,7 +2,6 @@
 -export([start/0, loop/2]).
 
 start() ->
-    % anytool ??
     Mallet = tool:start(mallet),
     Hammer = tool:start(hammer),
     Tools = [{mallet, Mallet}, {hammer, Hammer}],
@@ -19,8 +18,8 @@ loop(Tools, Q) ->
 
 give_tools(Tools, Queries) ->
     {Tb, Qb} = rem_matches(Tools, Queries, 
-			   fun(_, {_, anytool}) -> true;
-			      ({Type, _}, {_, Type}) -> true;
+			   fun(_, {_, anytool}) -> true; % anytool
+			      ({Type, _}, {_, Type}) -> true; % exact tool
 			      (_, _) -> false
 			   end,
 			   fun({_, Pid}, {Client, _}) -> Pid ! {Client, get} end),

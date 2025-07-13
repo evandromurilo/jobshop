@@ -1,19 +1,26 @@
 -module(jobber).
 -export([start/1, loop_available/1]).
 
-start(Hammer) ->
-    spawn(jobber, loop_available, [Hammer]).
+start(Toolbox) ->
+    spawn(jobber, loop_available, [Toolbox]).
 
-loop_available(Hammer) ->
+loop_available(Toolbox) ->
     receive
 	{Client, easy_job} ->
 	    Client ! {self(), object};
 	{Client, hard_job} ->
-	    Hammer ! {self(), geth},
+	    Toolbox ! {self(), get, hammer},
 	    receive
-		{Hammer, granted} ->
-		    Hammer ! {self(), puth},
+		{granted, Tool} ->
+		    Toolbox ! {self(), put, Tool},
+		    Client ! {self(), object}
+	    end;
+	{Client, avg_job} ->
+	    Toolbox ! {self(), get, anytool},
+	    receive
+		{granted, Tool} ->
+		    Toolbox ! {self(), put, Tool},
 		    Client ! {self(), object}
 	    end
     end,
-    loop_available(Hammer).
+    loop_available(Toolbox).
