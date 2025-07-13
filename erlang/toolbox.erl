@@ -1,12 +1,10 @@
 -module(toolbox).
 -export([start/0, loop/2]).
 
-% acho que tá funcionando, mas a interface está hard de usar
-
 start() ->
     % anytool ??
-    Mallet = tool:start(),
-    Hammer = tool:start(),
+    Mallet = tool:start(mallet),
+    Hammer = tool:start(hammer),
     Tools = [{mallet, Mallet}, {hammer, Hammer}],
     spawn(toolbox, loop, [Tools, []]).
 
