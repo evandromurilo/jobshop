@@ -10,8 +10,8 @@ start() ->
 
 loop(Tools, Q) ->
     receive
-	{Client, get, Type} ->
-	    give_tools(Tools, Q ++ [{Client, Type}]);
+	{Client, get, Query} ->
+	    give_tools(Tools, Q ++ [{Client, Query}]);
 	{Client, put, {Type, Pid}} ->
 	    Pid ! {Client, put},
 	    give_tools([{Type, Pid} | Tools], Q)
@@ -19,7 +19,8 @@ loop(Tools, Q) ->
 
 give_tools(Tools, Queries) ->
     {Tb, Qb} = rem_matches(Tools, Queries, 
-			   fun({Type, _}, {_, Type}) -> true;
+			   fun(_, {_, anytool}) -> true;
+			      ({Type, _}, {_, Type}) -> true;
 			      (_, _) -> false
 			   end,
 			   fun({_, Pid}, {Client, _}) -> Pid ! {Client, get} end),
